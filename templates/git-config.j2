@@ -1,0 +1,13 @@
+[user]
+    email = {{ item.email }}
+    name = {{ item.name }}
+{% if item.ignore_github is defined or item.ignore_custom is defined %}
+[core]
+    excludesfile = /home/{{ item.user }}/.gitignore
+{% endif %}
+[push]
+    default = {{ item.push_default|default('upstream') }}
+{% if item.fetch_prune|default(true) %}
+[fetch]
+    prune = true
+{% endif %}

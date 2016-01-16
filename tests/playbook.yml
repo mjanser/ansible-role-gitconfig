@@ -1,0 +1,16 @@
+---
+- hosts: all
+  roles:
+    - ansible-role-gitconfig
+  vars:
+    gitconfig_users:
+      - user: vagrant
+        name: Vagrant User
+        email: info@example.com
+        push_default: simple
+        ignore_github:
+          - Linux
+          - Vim
+        ignore_custom: |
+          .vagrant
+          *.bak
