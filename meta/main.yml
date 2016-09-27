@@ -3,11 +3,10 @@ galaxy_info:
   author: mjanser
   description: Configures git for various users
   license: MIT
-  min_ansible_version: 1.6
+  min_ansible_version: 2.0
   platforms:
   - name: Fedora
-    versions:
-    - 23
-  categories:
+  galaxy_tags:
   - system
+  - git
 dependencies: []
