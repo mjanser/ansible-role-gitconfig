@@ -7,7 +7,7 @@
       - user: vagrant
         name: Vagrant User
         email: info@example.com
-        push_default: simple
+        push_default: upstream
         ignore_github:
           - Linux
           - Vim

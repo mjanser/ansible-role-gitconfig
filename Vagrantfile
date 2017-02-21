@@ -1,9 +1,9 @@
 Vagrant.configure('2') do |config|
-  config.vm.box = 'obnox/fedora24-64-lxc'
-  config.vm.hostname = 'ansible-role-gitconfig-fedora-24'
+  config.vm.box = 'mjanser/fedora25-64-lxc'
+  config.vm.hostname = 'ansible-role-gitconfig'
 
-  config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "playbook.yml"
+  config.vm.provision 'ansible_local' do |ansible|
+    ansible.playbook = 'playbook.yml'
     ansible.sudo = true
   end
 
@@ -15,7 +15,7 @@ grep -q .bak /home/vagrant/.gitignore || exit 1
 grep -q /home/vagrant/.gitignore /home/vagrant/.gitconfig || exit 1
 grep -q "email = " /home/vagrant/.gitconfig || exit 1
 grep -q "name = " /home/vagrant/.gitconfig || exit 1
-grep -q "default = simple" /home/vagrant/.gitconfig || exit 1
+grep -q "default = upstream" /home/vagrant/.gitconfig || exit 1
 grep -q "prune = true" /home/vagrant/.gitconfig || exit 1
 
 echo "127.0.0.1" > /etc/ansible/hosts

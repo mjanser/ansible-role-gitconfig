@@ -6,7 +6,7 @@
     excludesfile = /home/{{ item.user }}/.gitignore
 {% endif %}
 [push]
-    default = {{ item.push_default|default('upstream') }}
+    default = {{ item.push_default|default('simple') }}
 {% if item.fetch_prune|default(true) %}
 [fetch]
     prune = true
