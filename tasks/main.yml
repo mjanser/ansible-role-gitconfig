@@ -1,19 +1,29 @@
 ---
+- name: "get groups"
+  command: "id -g {{ item.user }}"
+  with_items: "{{ gitconfig_users }}"
+  register: results
+
+- name: "set gitconfig_groups variable"
+  set_fact:
+    gitconfig_groups: "{{ gitconfig_groups|default({}) | combine( {item.user: results.results.pop(0).stdout | trim } ) }}"
+  with_items: "{{ gitconfig_users }}"
+
 - name: ensure git is configured for users
   template:
     src: git-config.j2
-    dest: "/home/{{ item.user }}/.gitconfig"
+    dest: "~{{ item.user }}/.gitconfig"
     owner: "{{ item.user }}"
-    group: "{{ item.user }}"
+    group: "{{ gitconfig_groups[item.user] }}"
     mode: 0644
   with_items: "{{ gitconfig_users }}"
 
 - name: ensure gitignore directory for users exists
   file:
-    dest: "/home/{{ item.user }}/.gitignore-sources"
+    dest: "~{{ item.user }}/.gitignore-sources"
     state: directory
     owner: "{{ item.user }}"
-    group: "{{ item.user }}"
+    group: "{{ gitconfig_groups[item.user] }}"
     mode: 0755
   when: item.ignore_github is defined or item.ignore_custom is defined
   with_items: "{{ gitconfig_users }}"
@@ -21,9 +31,9 @@
 - name: ensure gitignore source files from github.com for users are installed
   get_url:
     url: "https://raw.githubusercontent.com/github/gitignore/master/Global/{{ item[1] }}.gitignore"
-    dest: "/home/{{ item[0].user }}/.gitignore-sources/{{ item[1] }}.gitignore"
+    dest: "~{{ item[0].user }}/.gitignore-sources/{{ item[1] }}.gitignore"
     owner: "{{ item[0].user }}"
-    group: "{{ item[0].user }}"
+    group: "{{ gitconfig_groups[item[0].user] }}"
     mode: 0644
   with_subelements:
     - "{{ gitconfig_users }}"
@@ -32,19 +42,19 @@
 - name: ensure custom gitignore source file for users is installed
   copy:
     content: "{{ item.ignore_custom }}"
-    dest: "/home/{{ item.user }}/.gitignore-sources/custom.gitignore"
+    dest: "~{{ item.user }}/.gitignore-sources/custom.gitignore"
     owner: "{{ item.user }}"
-    group: "{{ item.user }}"
+    group: "{{ gitconfig_groups[item.user] }}"
     mode: 0644
   when: item.ignore_custom is defined
   with_items: "{{ gitconfig_users }}"
 
 - name: ensure gitignore files for users are assembled
   assemble:
-    src: "/home/{{ item.user }}/.gitignore-sources"
-    dest: "/home/{{ item.user }}/.gitignore"
+    src: "~{{ item.user }}/.gitignore-sources"
+    dest: "~{{ item.user }}/.gitignore"
     owner: "{{ item.user }}"
-    group: "{{ item.user }}"
+    group: "{{ gitconfig_groups[item.user] }}"
     mode: 0644
   when: item.ignore_github is defined or item.ignore_custom is defined
   with_items: "{{ gitconfig_users }}"
